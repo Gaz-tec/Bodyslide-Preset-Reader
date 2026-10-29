@@ -278,15 +278,21 @@ namespace Presets {
         // finds all the xmls in a target folder, and parses them into an xml vector.
         void ParseAllInFolder(std::string path, std::vector<bodypreset>* femalelist,
                               std::vector<bodypreset>* malelist) {
-            std::string filename;
-            for (auto const& dir_entry : std::filesystem::directory_iterator(path)) {
-                filename = dir_entry.path().string();
-                if (filename.substr(filename.find_last_of(".") + 1) == "xml") {
-                    size_t eraseamount = filename.find_last_of("/");
-                    filename.erase(0, eraseamount + 1);
+            std::error_code ec;
+            if (!std::filesystem::exists(path, ec) || ec) {
+                logger::warn("Directory not found or inaccessible: {}", path);
+                return;
+            }
 
-                    logger::trace("Now parsing {}...", filename);
-                    ParsePreset(filename, femalelist, malelist);
+            for (auto const& dir_entry : std::filesystem::directory_iterator(path, ec)) {
+                if (ec) {
+                    logger::warn("Error reading directory: {}", ec.message());
+                    break;
+                }
+                if (dir_entry.is_regular_file(ec) && dir_entry.path().extension() == ".xml") {
+                    std::string filepath = dir_entry.path().string();
+                    logger::trace("Now parsing {}...", dir_entry.path().filename().string());
+                    ParsePreset(filepath, femalelist, malelist);
                 }
             }
 
