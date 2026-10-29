@@ -19,6 +19,16 @@ namespace {
     }
 }  // namespace
 
+SKSEPluginInfo(
+    .Version = REL::Version{ 1, 0, 0, 0 },
+    .Name = "GazBodyslideReader"sv,
+    .Author = "Gaz-tec"sv,
+    .SupportEmail = ""sv,
+    .StructCompatibility = SKSE::StructCompatibility::Independent,
+    .RuntimeCompatibility = SKSE::VersionIndependence::AddressLibrary,
+    .MinimumSKSEVersion = REL::Version{ 0, 0, 0, 0 }
+)
+
 SKSEPluginLoad(const LoadInterface* skse) {
     InitializeLogging();
     const auto* plugin = PluginDeclaration::GetSingleton();
